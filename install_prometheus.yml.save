@@ -1,0 +1,40 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Update packages using DNF
+  hosts: your_target_host
+  tasks:
+    - name: Ensure DNF cache is up to date
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+        update_only: yes
+      when: ansible_distribution == "CentOS"
+
+
+    - name: install wget (CentOS)
+   
+ yum:
+      name: wget
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates (Ubuntu)
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: ubuntu_prometheus
+  become: true
+  roles:
+    - ubuntu_prometheus
+
+- hosts: centos_prometheus
+  become: true
+  roles:
+    - centos_prometheus
